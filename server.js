@@ -13,8 +13,8 @@ db = levelup(dbPath, { valueEncoding: 'json' });
 db = levelQuery(db);
 testData = [
   { name: 'Eugene', num: 42, awesome: true, car: { make: 'Toyota', model: 'Corolla' } },
-  { name: 'Susan', num: 43, awesome: true },
-  { name: 'Edmund', num: 88, awesome: false }
+  { name: 'Susan', num: 43, awesome: true, car: { make: 'Toyota', model: 'Camry' } },
+  { name: 'Edmund', num: 88, awesome: false, car: { make: 'Toyota', model: 'Corolla' } }
 ];
 
 function batchData() {
