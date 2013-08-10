@@ -12,15 +12,13 @@ describe('json paths', function() {
       tags: [ 'tag1', 'tag2', 'tag3' ]
     };
 
-    var paths = jsonPaths.slice([], obj, function (err, slices) {
-      if (err) return done(err);
-      var paths = slices.map(function (data) {
-        return data.key.join('.');
-      });
-      expect(paths).to.deep.equals(
-        [ 'name', 'car.make', 'car.model', 'tags.0', 'tags.1', 'tags.2' ]);
-      done();
+    var slices = jsonPaths.slice(obj);
+    var paths = slices.map(function (data) {
+      return data.key.join('.');
     });
+    expect(paths).to.deep.equals(
+      [ 'name', 'car.make', 'car.model', 'tags.0', 'tags.1', 'tags.2' ]);
+    done();
   });
 
   it('should be able to traverse a path', function(done) {

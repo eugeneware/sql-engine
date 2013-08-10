@@ -26,9 +26,9 @@ describe('json query driver', function() {
     db = levelup(dbPath, { valueEncoding: 'json' });
     db = levelQuery(db);
     testData = [
-      { name: 'Eugene', num: 42 },
-      { name: 'Susan', num: 43 },
-      { name: 'Edmund', num: 88 }
+      { name: 'Eugene', num: 42, awesome: 'goodbye' },
+      { name: 'Susan', num: 43, awesome: 'blah' },
+      { name: 'Edmund', num: 88, awesome: true }
     ];
     done();
   });
