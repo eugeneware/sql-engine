@@ -28,7 +28,7 @@ describe('json query driver', function() {
     testData = [
       { name: 'Eugene', num: 42, awesome: 'goodbye' },
       { name: 'Susan', num: 43, awesome: 'blah' },
-      { name: 'Edmund', num: 88, awesome: true }
+      { name: 'Edmund', num: 88, awesome: true, car: { make: 'Toyota', model: 'Corolla' } }
     ];
     done();
   });
