@@ -27,9 +27,17 @@
   "license": "BSD",
   "devDependencies": {
     "chai": "~1.7.2",
-    "mocha": "~1.12.0"
+    "mocha": "~1.12.0",
+    "rimraf": "~2.2.2"
   },
   "dependencies": {
-    "mysql2": "~0.8.20"
+    "mysql2": "~0.8.20",
+    "json-testdata": "0.0.3",
+    "through": "~2.3.4",
+    "levelup": "~0.12.0",
+    "leveldown": "~0.6.2",
+    "jsonquery-engine": "0.0.4",
+    "level-queryengine": "~0.1.1",
+    "level-sublevel": "~4.8.3"
   }
 }
