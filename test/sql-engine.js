@@ -9,7 +9,7 @@ describe('sql-engine', function() {
     var jsq =
       { '$and': [ { '$or': [ { name: 'Eugene' }, { name: 'Susan' } ] }, { num: 42 } ] };
     var result = sqlTransform(sql);
-    expect(result).to.deep.equals(jsq);
+    expect(result.query).to.deep.equals(jsq);
     done();
   });
 });
