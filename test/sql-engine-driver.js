@@ -26,7 +26,7 @@ describe('json query driver', function() {
     db = levelup(dbPath, { valueEncoding: 'json' });
     db = levelQuery(db);
     testData = [
-      { name: 'Eugene', num: 42, awesome: 'goodbye' },
+      { name: 'Eugene', num: 42, awesome: 'goodbye', x: 99 },
       { name: 'Susan', num: 43, awesome: 'blah' },
       { name: 'Edmund', num: 88, awesome: true, car: { make: 'Toyota', model: 'Corolla' } }
     ];
@@ -56,7 +56,7 @@ describe('json query driver', function() {
         port: 3307
       });
 
-      clientConn.query('SELECT * FROM users WHERE num = 88',
+      clientConn.query('SELECT * FROM users',
         function (err, rows, fields) {
           if (err) return done(err);
           console.log(rows);
