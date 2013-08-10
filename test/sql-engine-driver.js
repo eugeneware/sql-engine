@@ -1,5 +1,12 @@
 var expect = require('chai').expect,
-    mysql = require('mysql2');
+    sqlTransform = require('../lib/sql-transform'),
+    mysql = require('mysql2'),
+    levelup = require('levelup'),
+    through = require('through'),
+    rimraf = require('rimraf'),
+    levelQuery = require('level-queryengine'),
+    jsonqueryEngine = require('jsonquery-engine'),
+    path = require('path');
 
 function getColumnDefinitions(dbName, table, row) {
   var defs = [];
@@ -60,57 +67,82 @@ function getColumnDefinition(dbName, table, colName, colValue) {
 }
 
 describe('json query driver', function() {
-  var server;
+  var server, testData, db, dbPath = path.join(__dirname, '..', 'data', 'testdb');
+
+  function batchData() {
+    return testData.map(function (data, i) {
+      return {
+        key: i,
+        value: data,
+        type: 'put'
+      };
+    });
+  }
+
+  beforeEach(function(done) {
+    rimraf.sync(dbPath);
+    db = levelup(dbPath, { valueEncoding: 'json' });
+    db = levelQuery(db);
+    testData = [
+      { name: 'Eugene', num: 42 },
+      { name: 'Susan', num: 43 },
+      { name: 'Edmund', num: 88 }
+    ];
+    done();
+  });
+
+  afterEach(function(done) {
+    db.close(done);
+  });
 
   it('should be able to proxy a simple request', function(done) {
-    server = mysql.createServer();
-    server.listen(3307, undefined, undefined, doQuery);
-    server.on('connection', function(conn) {
-      console.log('connection');
+    var users = levelQuery(db.sublevel('users'));
+    users.query.use(jsonqueryEngine());
 
-      conn.serverHandshake({
-        protocolVersion: 10,
-        serverVersion: 'node.js rocks',
-        connectionId: 1234,
-        statusFlags: 2,
-        characterSet: 8,
-        capabilityFlags: 0xffffff
-      });
+    console.log(Object.keys(users.sublevels));
 
-      conn.on('field_list', function(table, fields) {
-        console.log('field list:', table, fields);
-        conn.writeEof();
-      });
+    users.batch(batchData(), launchServer);
 
-      var remote = mysql.createConnection({
-        user: 'root',
-        database: 'triggertest',
-        host:'localhost',
-        password: 'iluvhslim2'
-      });
+    function launchServer() {
+      server = mysql.createServer();
+      server.listen(3307, undefined, undefined, doQuery);
+      server.on('connection', function(conn) {
+        console.log('connection');
 
-      conn.on('query', function(sql) {
-        console.log('proxying query:' + sql);
-        remote.query(sql, function(err) {
-          if (Array.isArray(arguments[1])) {
-            // response to a 'select', 'show' or similar
-            var rows = arguments[1], columns = arguments[2];
-            if (rows.length) {
-              var defs = getColumnDefinitions('levelup', 'mysub', rows[0]);
-              conn.writeTextResult(rows, defs);
-            } else {
-              conn.writeOk(0);
+        conn.serverHandshake({
+          protocolVersion: 10,
+          serverVersion: 'node.js rocks',
+          connectionId: 1234,
+          statusFlags: 2,
+          characterSet: 8,
+          capabilityFlags: 0xffffff
+        });
+
+        conn.on('field_list', function(table, fields) {
+          conn.writeEof();
+        });
+
+        conn.on('query', function(sql) {
+          var jsq = sqlTransform(sql);
+          console.log('proxying query:' + sql);
+          console.log(jsq);
+          var rows = [];
+          users.query(jsq).pipe(through(
+            function (data) {
+              rows.push(data);
+            },
+            function () {
+              if (rows.length) {
+                var defs = getColumnDefinitions('levelup', 'mysub', rows[0]);
+                conn.writeTextResult(rows, defs);
+              } else {
+                conn.writeOk(0);
+              }
             }
-          } else {
-            // response to an 'insert', 'update' or 'delete'
-            var result = arguments[1];
-            conn.writeOk(result);
-          }
+          ));
         });
       });
-
-      conn.on('end', remote.end.bind(remote));
-    });
+    }
 
     function doQuery() {
       var clientConn = mysql.createConnection({
@@ -121,7 +153,7 @@ describe('json query driver', function() {
         port: 3307
       });
 
-      clientConn.query('SELECT * FROM test4 WHERE name = \'Eugene\'',
+      clientConn.query('SELECT * FROM users WHERE num = 88',
         function (err, rows, fields) {
           if (err) return done(err);
           console.log(rows);

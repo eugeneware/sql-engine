@@ -7,7 +7,7 @@ describe('sql-engine', function() {
   it('should be able to convert a simple sql to a simple json query', function(done) {
     var sql = "SELECT * FROM phone INNER JOIN x ON (phone.x = x.x) WHERE (name = 'Eugene' OR name = 'Susan') AND num = 42";
     var jsq =
-      { '$and': [ { '$or': [ { name: 'Eugene' }, { name: 'Susan' } ] }, { num: '42' } ] };
+      { '$and': [ { '$or': [ { name: 'Eugene' }, { name: 'Susan' } ] }, { num: 42 } ] };
     var result = sqlTransform(sql);
     expect(result).to.deep.equals(jsq);
     done();
