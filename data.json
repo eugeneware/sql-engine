@@ -1,0 +1,9 @@
+[
+  { "name": "Bob", "num": 42, "awesome": "goodbye", "x": 99 },
+
+  { "name": "Jane", "num": 43, "awesome": "blah",
+    "car": { "make": "Toyota", "model": "Camry" } },
+
+  { "name": "Peter", "num": 88, "awesome": "true",
+    "car": { "make": "Toyota", "model": "Corolla" } }
+]

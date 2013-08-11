@@ -29,7 +29,9 @@
     "chai": "~1.7.2",
     "mocha": "~1.12.0",
     "rimraf": "~2.2.2",
-    "after": "~0.8.1"
+    "after": "~0.8.1",
+    "json-testdata": "0.0.3",
+    "mysql": "~2.0.0-alpha8"
   },
   "dependencies": {
     "mysql2": "~0.8.20",

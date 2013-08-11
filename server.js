@@ -11,11 +11,7 @@ var testData, db, dbPath = path.join(__dirname, 'data', 'testdb');
 rimraf.sync(dbPath);
 db = levelup(dbPath, { valueEncoding: 'json' });
 db = levelQuery(db);
-testData = [
-  { name: 'Eugene', num: 42, awesome: 'goodbye', x: 99 },
-  { name: 'Susan', num: 43, awesome: 'blah' },
-  { name: 'Edmund', num: 88, awesome: true, car: { make: 'Toyota', model: 'Corolla' } }
-];
+testData = require('./data.json');
 
 function batchData() {
   return testData.map(function (data, i) {
