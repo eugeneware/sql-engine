@@ -15,11 +15,7 @@ testData = require('./data.json');
 
 function batchData() {
   return testData.map(function (data, i) {
-    return {
-      key: i,
-      value: data,
-      type: 'put'
-    };
+    return { key: i, value: data, type: 'put' };
   });
 }
 
@@ -27,5 +23,5 @@ var server;
 var users = levelQuery(db.sublevel('users'));
 users.query.use(jsonqueryEngine());
 users.batch(batchData(), function () {
-  server = sqlDriver(db, 3307, undefined, undefined);
+  server = sqlDriver(db, 3307);
 });
