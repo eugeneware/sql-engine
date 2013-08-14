@@ -19,9 +19,11 @@ function batchData() {
   });
 }
 
+var port = process.env.PORT || process.argv[2] || 3307;
 var server;
 var users = levelQuery(db.sublevel('users'));
 users.query.use(jsonqueryEngine());
 users.batch(batchData(), function () {
-  server = sqlDriver(db, 3307);
+  server = sqlDriver(db, port);
+  console.log('MySQL Server Listening on Port ' + port);
 });
